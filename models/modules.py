@@ -26,13 +26,13 @@ class Stem(nn.Module):
         This layer gets input of size 224x224, and produce output of size 1.
     """
 
-    def __init__(self, in_channels, out_channels):
+    def __init__(self, out_channels):
         """
         :param in_channels:
         :param out_channels: w_0
         """
         super(Stem, self).__init__()
-        self.conv = nn.Conv2d(in_channels, out_channels, kernel_size=3, stride=2, padding=1)
+        self.conv = nn.Conv2d(3, out_channels, kernel_size=3, stride=2, padding=1)
         self.bn = nn.BatchNorm2d(out_channels)
         self.rl = nn.ReLU()
 
@@ -47,15 +47,14 @@ class XBlock(nn.Module):
     """
         Described in section 3.2 page 4, figure 4.
     """
-    def __init__(self, in_channels, bottleneck_ratio, group_width, stride):
+    def __init__(self, in_channels, out_channels, bottleneck_ratio, group_width, stride):
         """
         :param in_channels: w_i
         :param bottleneck_ratio: b_i
         :param group_width: g_i
         """
         super(XBlock, self).__init__()
-        inter_channels = in_channels // bottleneck_ratio
-        out_channels = in_channels*stride
+        inter_channels = out_channels // bottleneck_ratio
 
         self.conv_block_1 = nn.Sequential(
             nn.Conv2d(in_channels, inter_channels, kernel_size=1),
@@ -92,19 +91,15 @@ class XBlock(nn.Module):
         return x
 
 class Stage(nn.Module):
-    def __init__(self, num_blocks, in_channels, bottleneck_ratio, group_width):
+    def __init__(self, num_blocks, in_channels, out_channels, bottleneck_ratio, group_width):
         super(Stage, self).__init__()
         self.blocks = nn.Sequential()
-        self.blocks.add_module("block_0", XBlock(in_channels, bottleneck_ratio, group_width, 2))
-        in_channels *= 2
+        self.blocks.add_module("block_0", XBlock(in_channels, out_channels, bottleneck_ratio, group_width, 2))
         for i in range(1, num_blocks):
-            self.blocks.add_module("block_{}".format(i), XBlock(in_channels, bottleneck_ratio, group_width, 1))
+            self.blocks.add_module("block_{}".format(i), XBlock(out_channels, out_channels, bottleneck_ratio, group_width, 1))
 
     def forward(self, x):
         x = self.blocks(x)
         return x
 
-class AnyNet(nn.Module):
-    def __init__(self):
-        super(AnyNet, self).__init__()
-        pass
+
