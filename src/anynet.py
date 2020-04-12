@@ -49,10 +49,10 @@ class AnyNetXc(AnyNetXb):
 class AnyNetXd(AnyNetXc):
     def __init__(self, ls_num_blocks, ls_block_width, ls_bottleneck_ratio, ls_group_width):
         super(AnyNetXd, self).__init__(ls_num_blocks, ls_block_width, ls_bottleneck_ratio, ls_group_width)
-        assert all(i < j for i, j in zip(ls_block_width, ls_block_width[1:])) is True
+        assert all(i <= j for i, j in zip(ls_block_width, ls_block_width[1:])) is True
 
 
 class AnyNetXe(AnyNetXd):
     def __init__(self, ls_num_blocks, ls_block_width, ls_bottleneck_ratio, ls_group_width):
         super(AnyNetXe, self).__init__(ls_num_blocks, ls_block_width, ls_bottleneck_ratio, ls_group_width)
-        assert all(i < j for i, j in zip(ls_num_blocks, ls_num_blocks[1:])) is True
+        assert all(i <= j for i, j in zip(ls_num_blocks, ls_num_blocks[1:])) is True
