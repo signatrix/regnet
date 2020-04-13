@@ -1,10 +1,11 @@
 """
 @author: Signatrix GmbH
+Implementation of paradigm described in paper: Designing Network Design Spaces published by Facebook AI Research (FAIR)
 """
 import torch.nn as nn
 
 
-class Head(nn.Module):
+class Head(nn.Module):  # From figure 3
 
     def __init__(self, num_channels, num_classes):
         super(Head, self).__init__()
@@ -18,11 +19,11 @@ class Head(nn.Module):
         return x
 
 
-class Stem(nn.Module):
+class Stem(nn.Module): # From figure 3
 
     def __init__(self, out_channels):
         super(Stem, self).__init__()
-        self.conv = nn.Conv2d(3, out_channels, kernel_size=3, stride=2, padding=1)
+        self.conv = nn.Conv2d(3, out_channels, kernel_size=3, stride=2, padding=1, bias=False)
         self.bn = nn.BatchNorm2d(out_channels)
         self.rl = nn.ReLU()
 
@@ -33,28 +34,29 @@ class Stem(nn.Module):
         return x
 
 
-class XBlock(nn.Module):
+class XBlock(nn.Module): # From figure 4
     def __init__(self, in_channels, out_channels, bottleneck_ratio, group_width, stride):
         super(XBlock, self).__init__()
         inter_channels = out_channels // bottleneck_ratio
+        groups = inter_channels // group_width
 
         self.conv_block_1 = nn.Sequential(
-            nn.Conv2d(in_channels, inter_channels, kernel_size=1),
+            nn.Conv2d(in_channels, inter_channels, kernel_size=1, bias=False),
             nn.BatchNorm2d(inter_channels),
             nn.ReLU()
         )
         self.conv_block_2 = nn.Sequential(
-            nn.Conv2d(inter_channels, inter_channels, kernel_size=3, stride=stride, groups=group_width, padding=1),
+            nn.Conv2d(inter_channels, inter_channels, kernel_size=3, stride=stride, groups=groups, padding=1, bias=False),
             nn.BatchNorm2d(inter_channels),
             nn.ReLU()
         )
         self.conv_block_3 = nn.Sequential(
-            nn.Conv2d(inter_channels, out_channels, kernel_size=1),
+            nn.Conv2d(inter_channels, out_channels, kernel_size=1, bias=False),
             nn.BatchNorm2d(out_channels)
         )
-        if stride != 1:
+        if stride != 1 or in_channels != out_channels:
             self.shortcut = nn.Sequential(
-                nn.Conv2d(in_channels, out_channels, kernel_size=1, stride=stride),
+                nn.Conv2d(in_channels, out_channels, kernel_size=1, stride=stride, bias=False),
                 nn.BatchNorm2d(out_channels)
             )
         else:
@@ -73,11 +75,11 @@ class XBlock(nn.Module):
         return x
 
 
-class Stage(nn.Module):
-    def __init__(self, num_blocks, in_channels, out_channels, bottleneck_ratio, group_width):
+class Stage(nn.Module): # From figure 3
+    def __init__(self, num_blocks, in_channels, out_channels, bottleneck_ratio, group_width, stride):
         super(Stage, self).__init__()
         self.blocks = nn.Sequential()
-        self.blocks.add_module("block_0", XBlock(in_channels, out_channels, bottleneck_ratio, group_width, 2))
+        self.blocks.add_module("block_0", XBlock(in_channels, out_channels, bottleneck_ratio, group_width, stride))
         for i in range(1, num_blocks):
             self.blocks.add_module("block_{}".format(i),
                                    XBlock(out_channels, out_channels, bottleneck_ratio, group_width, 1))

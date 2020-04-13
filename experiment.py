@@ -1,25 +1,26 @@
 """
 @author: Signatrix GmbH
+Implementation of paradigm described in paper: Designing Network Design Spaces published by Facebook AI Research (FAIR)
 """
 import torch
 from torchsummary import summary
 from pthflops import count_ops
-from src.anynet import AnyNetX
+from src.regnet import RegNet
 from src.config import INPUT_RESOLUTION
 
 def main():
-    ls_num_blocks = [16, 16, 16, 16]
-    # Block width must be divisible by bottleneck ratio
-    ls_block_width = [128, 128, 128, 16]
-    ls_bottleneck_ratio = [1, 2, 2, 4]
-    ls_group_width = [2, 2, 2, 4]
-    model = AnyNet(ls_num_blocks, ls_block_width, ls_bottleneck_ratio, ls_group_width)
+    bottleneck_ratio = 1
+    group_width = 16
+    initial_width = 32
+    slope = 5
+    quantized_param = 2.5
+    network_depth = 10
+    stride = 2
+    model = RegNet(initial_width, slope, quantized_param, network_depth, bottleneck_ratio, group_width, stride)
     dummy_images = torch.rand(1, 3, INPUT_RESOLUTION, INPUT_RESOLUTION)
-    # model.cuda()
-    # dummy_images = dummy_images.cuda()
-    out = model(dummy_images)
+    # out = model(dummy_images)
     count_ops(model, dummy_images, verbose=False)
-    # summary(model, (3, INPUT_RESOLUTION, INPUT_RESOLUTION))
+    summary(model, (3, INPUT_RESOLUTION, INPUT_RESOLUTION), device="cpu")
 
 
 if __name__ == '__main__':
