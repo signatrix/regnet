@@ -10,10 +10,8 @@ class AnyNetX(nn.Module):
     def __init__(self, ls_num_blocks, ls_block_width, ls_bottleneck_ratio, ls_group_width):
         super(AnyNetX, self).__init__()
         # Make sure that there are 4 values for each parameter
-        assert len(ls_num_blocks) == 4
-        assert len(ls_num_blocks) == len(ls_block_width)
-        assert len(ls_num_blocks) == len(ls_bottleneck_ratio)
-        assert len(ls_num_blocks) == len(ls_group_width)
+        assert len(ls_num_blocks) == 4 and len(ls_block_width) == 4 and len(ls_bottleneck_ratio) == 4 and len(
+            ls_group_width) == 4
         # For each stage, at each layer, number of channels (block width / bottleneck ratio) must be divisible by group width
         for block_width, bottleneck_ratio, group_width in zip(ls_block_width, ls_bottleneck_ratio, ls_group_width):
             assert block_width % (bottleneck_ratio * group_width) == 0
