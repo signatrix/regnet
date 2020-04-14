@@ -6,7 +6,7 @@ import numpy as np
 from src.anynet import AnyNetXe
 
 
-class RegNet(AnyNetXe):
+class RegNetX(AnyNetXe):
     def __init__(self, initial_width, slope, quantized_param, network_depth, bottleneck_ratio, group_width, stride):
         # We need to derive block width and number of blocks from initial parameters.
         parameterized_width = initial_width + slope * np.arange(network_depth)  # From equation 2
@@ -20,9 +20,12 @@ class RegNet(AnyNetXe):
         # due to bottleneck ratio. Hence, we need to adjust the formers.
         # Group width could be swapped to number of groups, since their multiplication is block width
         ls_group_width = np.array([min(group_width, block_width // bottleneck_ratio) for block_width in ls_block_width])
-
         ls_block_width = np.round(ls_block_width // bottleneck_ratio / group_width) * group_width
         ls_group_width = ls_group_width.astype(np.int) * bottleneck_ratio
         ls_bottleneck_ratio = [bottleneck_ratio for _ in range(len(ls_block_width))]
+        # print (ls_num_blocks)
+        # print (ls_block_width)
+        # print (ls_bottleneck_ratio)
+        # print (ls_group_width)
         super(AnyNetXe, self).__init__(ls_num_blocks, ls_block_width.astype(np.int).tolist(), ls_bottleneck_ratio,
                                        ls_group_width.tolist(), stride)
