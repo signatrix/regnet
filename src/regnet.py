@@ -7,7 +7,8 @@ from src.anynet import AnyNetXe
 
 
 class RegNetX(AnyNetXe):
-    def __init__(self, initial_width, slope, quantized_param, network_depth, bottleneck_ratio, group_width, stride):
+    def __init__(self, initial_width, slope, quantized_param, network_depth, bottleneck_ratio, group_width, stride,
+                 se_ratio=None):
         # We need to derive block width and number of blocks from initial parameters.
         parameterized_width = initial_width + slope * np.arange(network_depth)  # From equation 2
         parameterized_block = np.log(parameterized_width / initial_width) / np.log(quantized_param)  # From equation 3
@@ -23,9 +24,12 @@ class RegNetX(AnyNetXe):
         ls_block_width = np.round(ls_block_width // bottleneck_ratio / group_width) * group_width
         ls_group_width = ls_group_width.astype(np.int) * bottleneck_ratio
         ls_bottleneck_ratio = [bottleneck_ratio for _ in range(len(ls_block_width))]
-        # print (ls_num_blocks)
-        # print (ls_block_width)
-        # print (ls_bottleneck_ratio)
-        # print (ls_group_width)
-        super(AnyNetXe, self).__init__(ls_num_blocks, ls_block_width.astype(np.int).tolist(), ls_bottleneck_ratio,
-                                       ls_group_width.tolist(), stride)
+        super(RegNetX, self).__init__(ls_num_blocks, ls_block_width.astype(np.int).tolist(), ls_bottleneck_ratio,
+                                       ls_group_width.tolist(), stride, se_ratio)
+
+
+class RegNetY(RegNetX):
+    def __init__(self, initial_width, slope, quantized_param, network_depth, bottleneck_ratio, group_width, stride,
+                 se_ratio):
+        super(RegNetY, self).__init__(initial_width, slope, quantized_param, network_depth, bottleneck_ratio,
+                                      group_width, stride, se_ratio)

@@ -5,7 +5,7 @@ Implementation of paradigm described in paper: Designing Network Design Spaces p
 import torch
 from torchsummary import summary
 from pthflops import count_ops
-from src.regnet import RegNet
+from src.regnet import RegNetX, RegNetY
 from src.config import INPUT_RESOLUTION
 
 def main():
@@ -16,7 +16,8 @@ def main():
     quantized_param = 2.5
     network_depth = 40
     stride = 2
-    model = RegNet(initial_width, slope, quantized_param, network_depth, bottleneck_ratio, group_width, stride)
+    se_ratio = 4
+    model = RegNetY(initial_width, slope, quantized_param, network_depth, bottleneck_ratio, group_width, stride, se_ratio)
     # model.cuda()
     dummy_images = torch.rand(1, 3, INPUT_RESOLUTION, INPUT_RESOLUTION)
     # dummy_images = dummy_images.cuda()
