@@ -29,6 +29,7 @@ class RegNetX(AnyNetXe):
 
 
 class RegNetY(RegNetX):
+    # RegNetY = RegNetX + SE
     def __init__(self, initial_width, slope, quantized_param, network_depth, bottleneck_ratio, group_width, stride,
                  se_ratio):
         super(RegNetY, self).__init__(initial_width, slope, quantized_param, network_depth, bottleneck_ratio,

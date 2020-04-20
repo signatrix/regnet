@@ -12,10 +12,11 @@ import torch.nn as nn
 import torch.nn.parallel
 from torch.utils.data import DataLoader
 from torch.optim import SGD
-from tensorboardX import SummaryWriter
+from torch.utils.tensorboard import SummaryWriter
 
 from src.regnet import RegNetY
 from src.dataset import Imagenet
+from src.config import TRAIN_IMAGE_SIZE
 
 
 def get_args():
@@ -79,7 +80,9 @@ def main(opt):
     model = RegNetY(opt.initial_width, opt.slope, opt.quantized_param, opt.network_depth, opt.bottleneck_ratio,
                     opt.group_width, opt.stride, opt.se_ratio)
 
-    # writer.add_graph(model, torch.randn((1, 3, TRAIN_IMAGE_SIZE, TRAIN_IMAGE_SIZE)))
+    dummy_input = torch.randn((1, 3, TRAIN_IMAGE_SIZE, TRAIN_IMAGE_SIZE))
+    writer.add_graph(model, dummy_input)
+
     model = torch.nn.DataParallel(model)
     if torch.cuda.is_available():
         model = nn.DataParallel(model)
