@@ -25,7 +25,7 @@ def get_args():
 
     parser.add_argument("-d", "--data_path", type=str, default="/mnt/datasets/imagenet/imagenet", help="the root folder of dataset")
     parser.add_argument("-e", "--epochs", default=100, type=int, help="number of total epochs to run")
-    parser.add_argument("-b", "--batch_size", default=64, type=int)
+    parser.add_argument("-b", "--batch_size", default=90, type=int)
     parser.add_argument("-l", "--lr", default=0.1, type=float, help="initial learning rate")
     parser.add_argument("-m", "--momentum", default=0.9, type=float, help="momentum")
     parser.add_argument("-w", "--weight_decay", default=5e-4, type=float, help="weight decay")
@@ -58,7 +58,7 @@ def main(opt):
                        "drop_last": True,
                        "num_workers": 12}
 
-    test_params = {"batch_size": opt.batch_size,
+    test_params = {"batch_size": opt.batch_size//10,
                    "shuffle": False,
                    "drop_last": False,
                    "num_workers": 12}
@@ -83,7 +83,6 @@ def main(opt):
     dummy_input = torch.randn((1, 3, TRAIN_IMAGE_SIZE, TRAIN_IMAGE_SIZE))
     writer.add_graph(model, dummy_input)
 
-    model = torch.nn.DataParallel(model)
     if torch.cuda.is_available():
         model = nn.DataParallel(model)
         model = model.cuda()
