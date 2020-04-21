@@ -12,7 +12,7 @@ Here is our pytorch pytorch implementation of network design paradigm described 
 
 <p align="center">
   <img src="demo/x5.png"><br/>
-  <i>Generalnetwork  structure</i>
+  <i>General network  structure</i>
 </p>
 
 <p align="center">
@@ -34,7 +34,8 @@ Here is our pytorch pytorch implementation of network design paradigm described 
 
 ## Datasets
 
-We use Imagenet (ILSVRC2012) for all experiments, as stated in the paper
+We use Imagenet (ILSVRC2012) for all experiments, as stated in the paper.
+
 Create a data folder under this repository,
 
 ```
