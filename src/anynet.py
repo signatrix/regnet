@@ -5,6 +5,7 @@ Implementation of paradigm described in paper: Designing Network Design Spaces p
 import torch.nn as nn
 from src.modules import Stem, Stage, Head
 from src.config import NUM_CLASSES
+from math import sqrt
 
 
 class AnyNetX(nn.Module):
@@ -24,6 +25,19 @@ class AnyNetX(nn.Module):
                                 Stage(num_blocks, prev_block_width, block_width, bottleneck_ratio, group_width, stride, se_ratio))
             prev_block_width = block_width
         self.net.add_module("head", Head(ls_block_width[-1], NUM_CLASSES))
+        self.initialize_weight()
+
+    def initialize_weight(self):
+        for m in self.modules():
+            if isinstance(m, nn.Conv2d):
+                fan_out = m.kernel_size[0] * m.kernel_size[1] * m.out_channels
+                m.weight.data.normal_(mean=0.0, std=sqrt(2.0 / fan_out))
+            elif isinstance(m, nn.BatchNorm2d):
+                m.weight.data.fill_(1.0)
+                m.bias.data.zero_()
+            elif isinstance(m, nn.Linear):
+                m.weight.data.normal_(mean=0.0, std=0.01)
+                m.bias.data.zero_()
 
     def forward(self, x):
         x = self.net(x)
@@ -51,4 +65,5 @@ class AnyNetXd(AnyNetXc):
 class AnyNetXe(AnyNetXd):
     def __init__(self, ls_num_blocks, ls_block_width, ls_bottleneck_ratio, ls_group_width, stride, se_ratio):
         super(AnyNetXe, self).__init__(ls_num_blocks, ls_block_width, ls_bottleneck_ratio, ls_group_width, stride, se_ratio)
-        assert all(i <= j for i, j in zip(ls_num_blocks, ls_num_blocks[1:])) is True
+        if len(ls_num_blocks > 2):
+            assert all(i <= j for i, j in zip(ls_num_blocks[:-2], ls_num_blocks[1:-1])) is True
