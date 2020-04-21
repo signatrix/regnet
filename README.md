@@ -10,7 +10,7 @@ Here is our pytorch pytorch implementation of network design paradigm described 
 
 ## Network stucture
 
-<img src="demo/x5.jpg" width="400"> <img src="demo/x6.jpg" width="400"> 
+<img src="demo/x5.png" width="400"> <img src="demo/x6.png" width="400"> 
 
 ## Best models
 
