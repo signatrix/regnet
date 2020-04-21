@@ -27,7 +27,7 @@ def get_args():
 
     parser.add_argument("-d", "--data_path", type=str, default="data", help="the root folder of dataset")
     parser.add_argument("-e", "--epochs", default=100, type=int, help="number of total epochs to run")
-    parser.add_argument("-b", "--batch_size", default=128, type=int)
+    parser.add_argument("-b", "--batch_size", default=32, type=int)
     parser.add_argument("-l", "--lr", default=0.1, type=float, help="initial learning rate")
     parser.add_argument("-m", "--momentum", default=0.9, type=float, help="momentum")
     parser.add_argument("-w", "--weight_decay", default=5e-4, type=float, help="weight decay")
@@ -47,6 +47,11 @@ def get_args():
     args = parser.parse_args()
     return args
 
+def adjust_learning_rate(optimizer, epoch, lr):
+    """Sets the learning rate to the initial LR decayed by 10 every 30 epochs"""
+    lr = lr * (0.1 ** (epoch // 30))
+    for param_group in optimizer.param_groups:
+        param_group['lr'] = lr
 
 def main(opt):
     num_gpus = 1
@@ -99,6 +104,7 @@ def main(opt):
     model.train()
 
     for epoch in range(opt.epochs):
+        adjust_learning_rate(optimizer, epoch, opt.lr)
         train(training_generator, model, criterion, optimizer, epoch, writer)
         acc1 = validate(test_generator, model, criterion, epoch, writer)
 

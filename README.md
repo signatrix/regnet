@@ -71,6 +71,7 @@ With our code, you can:
 * **pytorch 1.4**
 * **opencv (cv2)**
 * **pthflops**
+* **torchsummary**
 
 ## Updating (21/04/2020)
 Complete all networks and training script. We are training RegnetY models and will update result soon.
