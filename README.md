@@ -8,17 +8,17 @@ Here is our pytorch pytorch implementation of network design paradigm described 
   <i>Design space design</i>
 </p>
 
-## Network stucture
+## Comparison
 
-<p align="center">
-  <img src="demo/x5.png"><br/>
-  <i>General network  structure</i>
-</p>
+P: Paper's. O: Our
 
-<p align="center">
-  <img src="demo/x6.png"><br/>
-  <i>X Block</i>
-</p>
+| Model | [P/O] gflops | [P/O] params |  [P/O] top-1 error |
+| :------: | :------: | :------: | :-----: |
+| RerNetY-200MF | 0.2/0.22 | 3.2/3.27 | 29.6/updating... |
+| RerNetY-400MF | 0.4/0.22 | 4.3/4.45 | 25.9/updating... |
+| RerNetY-600MF | 0.6/0.60 | 6.1/5.66 | 24.5/updating... |
+| RerNetY-800MF | 0.8/0.82 | 6.3/6.26 | 23.7/updating... |
+
 
 ## Best models
 
@@ -31,6 +31,7 @@ Here is our pytorch pytorch implementation of network design paradigm described 
   <img src="demo/x30.png"><br/>
   <i>Top RegNetY models</i>
 </p>
+
 
 ## Datasets
 
@@ -63,12 +64,18 @@ mkdir data
 With our code, you can:
 
 * **Train your model** with default arguments by running **python train.py -d path/to/image/root/folder**
-
+* We also provide shell scripts which could be used to run training for first RegnetY models at **./scripts/**. For example, if you want to train RegNetY 800MF, you could simply run **./scripts/RegnetY_800MF.sh** 
 ## Requirements
 
 * **python 3.7**
 * **pytorch 1.4**
 * **opencv (cv2)**
+* **pthflops**
 
 ## Updating (21/04/2020)
 Complete all networks and training script. We are training RegnetY models and will update result soon.
+
+## References
+
+- [facebookresearch/pycls](https://github.com/facebookresearch/pycls)
+- [pytorch/examples](https://github.com/pytorch/examples)

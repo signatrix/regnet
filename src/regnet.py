@@ -24,6 +24,10 @@ class RegNetX(AnyNetXe):
         ls_block_width = np.round(ls_block_width // bottleneck_ratio / group_width) * group_width
         ls_group_width = ls_group_width.astype(np.int) * bottleneck_ratio
         ls_bottleneck_ratio = [bottleneck_ratio for _ in range(len(ls_block_width))]
+        # print (ls_num_blocks)
+        # print (ls_block_width)
+        # print (ls_bottleneck_ratio)
+        # print (ls_group_width)
         super(RegNetX, self).__init__(ls_num_blocks, ls_block_width.astype(np.int).tolist(), ls_bottleneck_ratio,
                                        ls_group_width.tolist(), stride, se_ratio)
 

@@ -6,6 +6,8 @@ import argparse
 import os
 import shutil
 import time
+from pthflops import count_ops
+from torchsummary import summary
 
 import torch
 import torch.nn as nn
@@ -25,19 +27,20 @@ def get_args():
 
     parser.add_argument("-d", "--data_path", type=str, default="data", help="the root folder of dataset")
     parser.add_argument("-e", "--epochs", default=100, type=int, help="number of total epochs to run")
-    parser.add_argument("-b", "--batch_size", default=90, type=int)
+    parser.add_argument("-b", "--batch_size", default=128, type=int)
     parser.add_argument("-l", "--lr", default=0.1, type=float, help="initial learning rate")
     parser.add_argument("-m", "--momentum", default=0.9, type=float, help="momentum")
     parser.add_argument("-w", "--weight_decay", default=5e-4, type=float, help="weight decay")
     parser.add_argument("--log_path", type=str, default="tensorboard/signatrix_regnet_imagenet")
     parser.add_argument("--saved_path", type=str, default="trained_models")
 
-    parser.add_argument("--bottleneck_ratio", default=1, type=float)
-    parser.add_argument("--group_width", default=16, type=int)
-    parser.add_argument("--initial_width", default=32, type=int)
-    parser.add_argument("--slope", default=5, type=float)
+    # These default parameters are for RegnetY 200MF
+    parser.add_argument("--bottleneck_ratio", default=1, type=int)
+    parser.add_argument("--group_width", default=8, type=int)
+    parser.add_argument("--initial_width", default=24, type=int)
+    parser.add_argument("--slope", default=36, type=float)
     parser.add_argument("--quantized_param", default=2.5, type=float)
-    parser.add_argument("--network_depth", default=40, type=int)
+    parser.add_argument("--network_depth", default=13, type=int)
     parser.add_argument("--stride", default=2, type=int)
     parser.add_argument("--se_ratio", default=4, type=int)
 
@@ -82,6 +85,9 @@ def main(opt):
 
     dummy_input = torch.randn((1, 3, TRAIN_IMAGE_SIZE, TRAIN_IMAGE_SIZE))
     writer.add_graph(model, dummy_input)
+    # Calculate model FLOPS and number of parameters
+    count_ops(model, dummy_input, verbose=False)
+    summary(model, (3, TRAIN_IMAGE_SIZE, TRAIN_IMAGE_SIZE), device="cpu")
 
     if torch.cuda.is_available():
         model = nn.DataParallel(model)
@@ -104,7 +110,7 @@ def main(opt):
             "state_dict": model.state_dict(),
             "best_acc1": best_acc1,
             "optimizer": optimizer.state_dict(),
-        }, is_best)
+        }, is_best, opt.saved_path)
 
 
 def train(train_loader, model, criterion, optimizer, epoch, writer):
@@ -199,10 +205,10 @@ def validate(val_loader, model, criterion, epoch, writer):
     return top1.avg
 
 
-def save_checkpoint(state, is_best, filename="checkpoint.pth.tar"):
-    torch.save(state, filename)
+def save_checkpoint(state, is_best, saved_path, filename="checkpoint.pth.tar"):
+    torch.save(state, os.path.join(saved_path, filename))
     if is_best:
-        shutil.copyfile(filename, "best_checkpoint.pth.tar")
+        shutil.copyfile(filename, os.path.join(saved_path, "best_checkpoint.pth.tar"))
 
 
 class AverageMeter(object):
