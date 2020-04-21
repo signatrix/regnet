@@ -15,7 +15,7 @@ P: Paper's. O: Our
 | Model | [P/O] gflops | [P/O] params |  [P/O] top-1 error |
 | :------: | :------: | :------: | :-----: |
 | RerNetY-200MF | 0.2/0.22 | 3.2/3.27 | 29.6/updating... |
-| RerNetY-400MF | 0.4/0.22 | 4.3/4.45 | 25.9/updating... |
+| RerNetY-400MF | 0.4/0.42 | 4.3/4.45 | 25.9/updating... |
 | RerNetY-600MF | 0.6/0.60 | 6.1/5.66 | 24.5/updating... |
 | RerNetY-800MF | 0.8/0.82 | 6.3/6.26 | 23.7/updating... |
 
