@@ -23,7 +23,7 @@ def get_args():
     parser = argparse.ArgumentParser(
         description="Implementation of paradigm described in paper: Designing Network Design Spaces published by Facebook AI Research (FAIR)")
 
-    parser.add_argument("-d", "--data_path", type=str, default="/mnt/datasets/imagenet/imagenet", help="the root folder of dataset")
+    parser.add_argument("-d", "--data_path", type=str, default="data", help="the root folder of dataset")
     parser.add_argument("-e", "--epochs", default=100, type=int, help="number of total epochs to run")
     parser.add_argument("-b", "--batch_size", default=90, type=int)
     parser.add_argument("-l", "--lr", default=0.1, type=float, help="initial learning rate")
