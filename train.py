@@ -204,9 +204,9 @@ def validate(val_loader, model, criterion, epoch, writer):
 
         print(" * Acc@1 {top1.avg:.3f} Acc@5 {top5.avg:.3f}"
               .format(top1=top1, top5=top5))
-        writer.add_scalar('Train/Loss', losses.avg, epoch)
-        writer.add_scalar('Train/Top1_acc', top1.avg, epoch)
-        writer.add_scalar('Train/Top5_acc', top5.avg, epoch)
+        writer.add_scalar('Test/Loss', losses.avg, epoch)
+        writer.add_scalar('Test/Top1_acc', top1.avg, epoch)
+        writer.add_scalar('Test/Top5_acc', top5.avg, epoch)
 
     return top1.avg
 
